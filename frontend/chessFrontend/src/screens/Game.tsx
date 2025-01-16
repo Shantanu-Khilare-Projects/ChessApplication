@@ -4,6 +4,8 @@ import { useSocket } from "../hooks/useSocket";
 import { Chess } from "chess.js";
 import { Button } from "../components/Button";
 import chessBg from "../assets/chessBackground3.jpg";
+import ConfettiExplosion from "react-confetti-explosion";
+import ReactConfetti from "react-confetti";
 
 export const MOVE = "move";
 export const INIT_GAME = "init_game";
@@ -12,9 +14,10 @@ export const GAME_OVER = "game_over";
 export function Game() {
   const socket = useSocket();
   const [chess, setChess] = useState(new Chess());
+  const [color, setColor] = useState("");
   const [board, setBoard] = useState(chess.board());
   const [gameOver, setGameOver] = useState("");
-  const [status, setStatus] = useState(false);
+  const [started, setStarted] = useState(false);
 
   useEffect(() => {
     if (!socket) return;
@@ -23,67 +26,83 @@ export function Game() {
       console.log("message --> ", message);
       switch (message.type) {
         case INIT_GAME:
-          // setChess(new Chess());
           setBoard(chess.board());
+          setStarted(true);
+          setColor(message.color);
           console.log("Game initialized");
           break;
         case MOVE:
           const move = message.payload;
           chess.move(move);
           setBoard(chess.board());
-          console.log("move made");
           break;
         case GAME_OVER:
-          if(chess.in_checkmate())
-            setGameOver("CheckMate")
-          else if(chess.in_stalemate())
-            setGameOver("StaleMate")
-          else if(chess.in_threefold_repetition())
-            setGameOver("Draw by Repetition")
-          else if(chess.insufficient_material())
-            setGameOver("Draw due to Insufficient Material")
-          console.log("Game Over");
+          if (chess.in_checkmate()) {
+            setGameOver("CheckMate");
+            console.log("Game Over set to CheckMate");
+          } else if (chess.in_stalemate()) {
+            setGameOver("StaleMate");
+            console.log("Game Over set to StaleMate");
+          } else if (chess.in_threefold_repetition()) {
+            setGameOver("Draw by Repetition");
+            console.log("Game Over set to Draw by Repetition");
+          } else if (chess.insufficient_material()) {
+            setGameOver("Draw due to Insufficient Material");
+            console.log("Game Over set to Draw due to Insufficient Material");
+          }
           break;
       }
     };
   }, [socket]);
 
   if (!socket) {
-    return <div>Connecting ...</div>;
+    return (
+      <div bg-cover h-screen w-screen bg-black text-white>
+        Connecting ...
+      </div>
+    );
   }
 
   return (
-    <div className=" h-[100vh] w-[100vw] fixed bg-slate-800">
-      {/* <h1 className="text-xl text-white">Finding Oponent...</h1> */}
-      <hr /> <br />
-      <br />
-      <div className="flex justify-center flex-wrap">
-        <ChessBoard chess={chess} setBoard={setBoard} board={board} socket={socket} />
+    <div
+      className="bg-cover w-[100vw] h-[100vh] fixed"
+      style={{
+        backgroundImage: `url(${chessBg})`,
+      }}
+    >
+      <div className="flex justify-evenly  flex-wrap py-12">
+        <ChessBoard chess={chess} board={board} socket={socket} color={color} />
 
-        <div className="px-5 mt-5">
-          <Button
-            onClick={() => {
-              socket.send(
-                JSON.stringify({
-                  type: INIT_GAME,
-                })
-              );
-            }}
-          >
-            Play
-          </Button>
-          <div className="flex justify-center items-center text-white text-2xl">
-            {gameOver &&
-              <div className="flex items-center justify-center min-h-screen bg-gray-800">
-              <h1 
-                className="text-2xl text-white border border-red-600 bg-red-500 rounded-lg px-8 py-6 shadow-lg"
-              >
-                {gameOver}
+        <div className="px-5 py-6 bg-transparent shadow-2xl fill-black rounded-2xl">
+          {!started && (
+            <Button
+              className="py-6"
+              onClick={() => {
+                socket.send(
+                  JSON.stringify({
+                    type: INIT_GAME,
+                  })
+                );
+              }}
+            >
+              Play
+            </Button>
+          )}
+          <div className="flex flex-wrap relative w-[350px] h-full justify-center items-center text-white text-2xl">
+            {started && (
+              <h1 className="py-6 text-2xl text-slate-200">
+                You are playing as {color}
               </h1>
-            </div>
-            
-            
-            }
+            )}
+            {gameOver && (
+              <div className="flex items-center justify-center py-6 bg-transparent">
+                <ConfettiExplosion />
+                <ReactConfetti />
+                <h1 className="text-2xl text-white border border-red-600 bg-red-500 rounded-lg px-8 py-6 shadow-lg">
+                  {gameOver}
+                </h1>
+              </div>
+            )}
           </div>
         </div>
       </div>

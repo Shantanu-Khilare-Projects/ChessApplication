@@ -1,6 +1,7 @@
 import { WebSocket } from "ws"
-import {Chess } from "chess.js";
+import {Chess, Square } from "chess.js";
 import { GAME_OVER, INIT_GAME, MOVE } from "./message";
+
 
 export class Game{
     public player1:WebSocket
@@ -8,6 +9,7 @@ export class Game{
     public board:Chess;
     public moves:string[]
     public startTime:Date
+    // public activeSquare:Square
 
     constructor(player1:WebSocket,player2:WebSocket){
         this.player1=player1
@@ -23,11 +25,12 @@ export class Game{
             type:INIT_GAME,
             color:"black"
         }))
+        
     }
 
     makeMove(socket:WebSocket, move:{
-        from:string,
-        to:string
+        from:Square,
+        to:Square
     }){
         if(this.board.history().length %2 === 0 && socket !==this.player1){
             return;
@@ -57,17 +60,15 @@ export class Game{
             }))
         }
         
-        // (this.board.history().length % 2===0){
             this.player1.send(JSON.stringify({
                 type:MOVE,
                 payload:move
             }))
-        // }else{
             this.player2.send(JSON.stringify({
                 type:MOVE,
                 payload:move
             }))
-        // }
+
         console.log(this.board.ascii())
     }
 }
