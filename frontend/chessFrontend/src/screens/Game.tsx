@@ -13,7 +13,7 @@ export const GAME_OVER = "game_over";
 
 export function Game() {
   const socket = useSocket();
-  const [chess, setChess] = useState(new Chess());
+  const [chess] = useState(new Chess());
   const [color, setColor] = useState("");
   const [board, setBoard] = useState(chess.board());
   const [gameOver, setGameOver] = useState("");
@@ -32,10 +32,11 @@ export function Game() {
           console.log("Game initialized");
           break;
         case MOVE:
+          { 
           const move = message.payload;
           chess.move(move);
           setBoard(chess.board());
-          break;
+          break; }
         case GAME_OVER:
           if (chess.in_checkmate()) {
             setGameOver("CheckMate");
@@ -53,11 +54,11 @@ export function Game() {
           break;
       }
     };
-  }, [socket]);
+  }, [socket,chess]);
 
   if (!socket) {
     return (
-      <div bg-cover h-screen w-screen bg-black text-white>
+      <div className="bg-cover h-screen w-screen bg-black text-white flex justify-center items-center text-2xl">
         Connecting ...
       </div>
     );
@@ -93,6 +94,11 @@ export function Game() {
               <h1 className="py-6 text-2xl text-slate-200">
                 You are playing as {color}
               </h1>
+            )}
+            {chess.in_check() && !chess.in_checkmate() && (
+              <div>
+                <h1 className="py-6 px-5 bg-red-500 animate-bounce hover:text-red-100 transition-all duration-300  text-3xl font-bold w-full flex justify-center text-black rounded-xl underline hover:animate-none">Check !!!</h1>
+              </div>
             )}
             {gameOver && (
               <div className="flex items-center justify-center py-6 bg-transparent">
