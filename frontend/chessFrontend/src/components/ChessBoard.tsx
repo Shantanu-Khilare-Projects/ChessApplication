@@ -17,7 +17,6 @@ export const ChessBoard = ({
   socket: WebSocket;
   color: string;
 }) => {
-  // const [from, setFrom] = useState<null | Square>(null);
   const [draggedFrom, setDraggedFrom] = useState<null | Square>(null);
   let index = 8;
 
@@ -59,6 +58,16 @@ export const ChessBoard = ({
   if (color == "black") {
     return (
       <div className="text-white-200 rotate-180">
+        <div className="h-10 flex justify-start text-center">
+          <div className="flex justify-center items-start text-xl rotate-180 text-pretty w-[75px] text-white">a</div>
+          <div className="flex justify-center items-start text-xl rotate-180 text-pretty w-[75px] text-white">b</div>
+          <div className="flex justify-center items-start text-xl rotate-180 text-pretty w-[75px] text-white">c</div>
+          <div className="flex justify-center items-start text-xl rotate-180 text-pretty w-[75px] text-white">d</div>
+          <div className="flex justify-center items-start text-xl rotate-180 text-pretty w-[75px] text-white">e</div>
+          <div className="flex justify-center items-start text-xl rotate-180 text-pretty w-[75px] text-white">f</div>
+          <div className="flex justify-center items-start text-xl rotate-180 text-pretty w-[75px] text-white">g</div>
+          <div className="flex justify-center items-start text-xl rotate-180 text-pretty w-[75px] text-white">h</div>
+        </div>
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="flex">
             {row.map((square, colIndex) => {
@@ -71,10 +80,6 @@ export const ChessBoard = ({
               return (
                 <div
                   onClick={() => {
-                    // if (!from) {
-                    //   if (square && square.color === 'b')
-                    //     setFrom(squareRepresentation);
-                    // }
                     if (!draggedFrom) {
                       if (square && square.color === "b") {
                         setDraggedFrom(squareRepresentation);
@@ -85,17 +90,14 @@ export const ChessBoard = ({
                           type: MOVE,
                           payload: {
                             move: {
-                              // from,
                               from: draggedFrom,
                               to: squareRepresentation,
                             },
                           },
                         })
                       );
-                      // setFrom(null);
                       setDraggedFrom(null);
                       chess.move({
-                        // from,
                         from: draggedFrom,
                         to: squareRepresentation,
                       });
@@ -106,7 +108,7 @@ export const ChessBoard = ({
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, squareRepresentation)}
 
-                  className={`w-[75px] h-[75px] focus:bg-red-500 rounded text-2xl ${getBackgroundColor(
+                  className={`w-[75px] text-black h-[75px] focus:bg-red-500 rounded text-2xl drop-shadow-2xl  ${getBackgroundColor(
                     rowIndex,
                     colIndex
                   )}`}
@@ -128,71 +130,21 @@ export const ChessBoard = ({
                 </div>
               );
             })}
-            <h1 className="text-white text-xl rotate-180 border-opacity-40 border rounded-l-2xl text-pretty opacity-40 px-3 py-5 bg-black">
-              {rowIndex}
+            <h1 className="text-xl text-white rotate-180 text-pretty px-1 py-5">
+              {-(rowIndex-8)}
             </h1>
           </div>
         ))}
-        <div className="h-10 flex justify-start  opacity-40 text-center">
-          <div className="text-white text-xl rotate-180 border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            a
-          </div>
-          <div className="text-white text-xl rotate-180 border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            b
-          </div>
-          <div className="text-white text-xl rotate-180 border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            c
-          </div>
-          <div className="text-white text-xl rotate-180 border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            d
-          </div>
-          <div className="text-white text-xl rotate-180 border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            e
-          </div>
-          <div className="text-white text-xl rotate-180 border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            f
-          </div>
-          <div className="text-white text-xl rotate-180 border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            g
-          </div>
-          <div className="text-white text-xl rotate-180 border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            h
-          </div>
-        </div>
+        
       </div>
     );
   } else {
     return (
       <div className="text-white-200">
-        <div className="h-10 flex justify-end  opacity-40 text-center">
-          <div className="text-white text-xl border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            a
-          </div>
-          <div className="text-white text-xl border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            b
-          </div>
-          <div className="text-white text-xl border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            c
-          </div>
-          <div className="text-white text-xl border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            d
-          </div>
-          <div className="text-white text-xl border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            e
-          </div>
-          <div className="text-white text-xl border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            f
-          </div>
-          <div className="text-white text-xl border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            g
-          </div>
-          <div className="text-white text-xl border-opacity-40 border rounded-t-2xl text-pretty w-[75px] bg-black">
-            h
-          </div>
-        </div>
+        
         {board.map((row, rowIndex) => (
           <div key={rowIndex} className="flex">
-            <h1 className="text-white text-xl border-opacity-40 border rounded-l-2xl text-pretty opacity-40 px-3 py-5 bg-black">
+            <h1 className="text-white text-xl text-pretty px-1 py-5">
               {index--}
             </h1>
             {row.map((square, colIndex) => {
@@ -205,10 +157,6 @@ export const ChessBoard = ({
               return (
                 <div
                   onClick={() => {
-                    // if (!from) {
-                    //   if (square && square.color === 'w')
-                    //     setFrom(squareRepresentation);
-                    // }
                     if (!draggedFrom) {
                       if (square && square.color === "b") {
                         setDraggedFrom(squareRepresentation);
@@ -219,17 +167,14 @@ export const ChessBoard = ({
                           type: MOVE,
                           payload: {
                             move: {
-                              // from,
                               from: draggedFrom,
                               to: squareRepresentation,
                             },
                           },
                         })
                       );
-                      // setFrom(null);
                       setDraggedFrom(null);
                       chess.move({
-                        // from,
                         from: draggedFrom,
                         to: squareRepresentation,
                       });
@@ -238,7 +183,7 @@ export const ChessBoard = ({
                   key={colIndex}
                   onDragOver={handleDragOver}
                   onDrop={(e) => handleDrop(e, squareRepresentation)}
-                  className={`w-[75px] h-[75px] focus:bg-red-500 rounded text-2xl ${getBackgroundColor(
+                  className={`w-[75px] text-black h-[75px] focus:bg-red-500 rounded text-2xl ${getBackgroundColor(
                     rowIndex,
                     colIndex
                   )}`}
@@ -256,12 +201,21 @@ export const ChessBoard = ({
                       }.png`}
                     />
                   ) : null}
-                  {/* {squareRepresentation} */}
                 </div>
               );
             })}
           </div>
         ))}
+        <div className="h-10 flex justify-end text-center">
+          <div className="text-xl flex justify-center items-start cursor-default w-[75px] text-white">a</div>
+          <div className="text-xl flex justify-center items-start cursor-default w-[75px] text-white">b</div>
+          <div className="text-xl flex justify-center items-start cursor-default w-[75px] text-white">c</div>
+          <div className="text-xl flex justify-center items-start cursor-default w-[75px] text-white">d</div>
+          <div className="text-xl flex justify-center items-start cursor-default w-[75px] text-white">e</div>
+          <div className="text-xl flex justify-center items-start cursor-default w-[75px] text-white">f</div>
+          <div className="text-xl flex justify-center items-start cursor-default w-[75px] text-white">g</div>
+          <div className="text-xl flex justify-center items-start cursor-default w-[75px] text-white">h</div>
+        </div>
       </div>
     );
   }

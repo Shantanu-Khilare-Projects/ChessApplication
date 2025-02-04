@@ -18,6 +18,7 @@ export function Game() {
   const [board, setBoard] = useState(chess.board());
   const [gameOver, setGameOver] = useState("");
   const [started, setStarted] = useState(false);
+  const [turn, setTurn] = useState("White");
 
   useEffect(() => {
     if (!socket) return;
@@ -31,35 +32,40 @@ export function Game() {
           setColor(message.color);
           console.log("Game initialized");
           break;
-        case MOVE:
-          { 
+        case MOVE: {
           const move = message.payload;
           chess.move(move);
           setBoard(chess.board());
-          break; }
+          if(chess.turn() === "w") {
+          setTurn("White");
+          } else {
+          setTurn("Black");
+          }
+          break;
+        }
         case GAME_OVER:
           if (chess.in_checkmate()) {
             setGameOver("CheckMate");
-            console.log("Game Over set to CheckMate");
           } else if (chess.in_stalemate()) {
             setGameOver("StaleMate");
-            console.log("Game Over set to StaleMate");
           } else if (chess.in_threefold_repetition()) {
             setGameOver("Draw by Repetition");
-            console.log("Game Over set to Draw by Repetition");
           } else if (chess.insufficient_material()) {
             setGameOver("Draw due to Insufficient Material");
-            console.log("Game Over set to Draw due to Insufficient Material");
+          } else if (chess.in_draw()) {
+            setGameOver("Draw");
+          } else if (chess.game_over()) {
+            setGameOver("Game Over");
           }
           break;
       }
     };
-  }, [socket,chess]);
+  }, [socket, chess]);
 
   if (!socket) {
     return (
       <div className="bg-cover h-screen w-screen bg-black text-white flex justify-center items-center text-2xl">
-        Connecting ...
+        Please wait. Connecting ...
       </div>
     );
   }
@@ -91,13 +97,17 @@ export function Game() {
           )}
           <div className="flex flex-wrap relative w-[350px] h-full justify-center items-center text-white text-2xl">
             {started && (
-              <h1 className="py-6 text-2xl text-slate-200">
-                You are playing as {color}
+              <div className="w-full flex justify-center">
+              <h1 className="py-6 text-2xl text-white bg-transparent">
+                {turn}'s Turn
               </h1>
+              </div>
             )}
             {chess.in_check() && !chess.in_checkmate() && (
-              <div>
-                <h1 className="py-6 px-5 bg-red-500 animate-bounce hover:text-red-100 transition-all duration-300  text-3xl font-bold w-full flex justify-center text-black rounded-xl underline hover:animate-none">Check !!!</h1>
+              <div className="w-full flex justify-center">
+                <h1 className="py-6 px-5 bg-red-500 animate-bounce hover:text-red-100 transition-all duration-300  text-3xl font-bold w-full flex justify-center text-black rounded-xl underline hover:animate-none">
+                  Check !!!
+                </h1>
               </div>
             )}
             {gameOver && (

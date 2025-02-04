@@ -29,3 +29,4 @@ Database: 	mysql database stores user profiles, game data, and match history sec
 WebSocket: 	Enables low-latency, bi-directional communication for real-time updates.
 
 This project showcases a blend of modern web development practices and a deep understanding of interactive application design.
+The video below showcases a quick chess match played against two players on different browser of same computer.
